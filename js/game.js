@@ -2270,18 +2270,19 @@ function getShareText() {
 function getShareUrl() { return window.location.href; }
 
 on('share-x', 'click', () => {
-  const text = getShareText() + ' by @chris_noring';
-  window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(getShareUrl())}`, '_blank');
+  const text = getShareText() + ' by @chris_noring\n\n' + getShareUrl();
+  window.open(`https://x.com/intent/post?text=${encodeURIComponent(text)}`, '_blank');
 });
 on('share-linkedin', 'click', () => {
-  const text = getShareText() + '\n\nCreated by Christoffer Noring: https://www.linkedin.com/in/christoffer-noring-3257061/';
-  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getShareUrl())}&summary=${encodeURIComponent(text)}`, '_blank');
+  const text = getShareText() + '\n\nCreated by Christoffer Noring: https://www.linkedin.com/in/christoffer-noring-3257061/\n\n' + getShareUrl();
+  window.open(`https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`, '_blank');
 });
 on('share-bluesky', 'click', () => {
-  window.open(`https://bsky.app/intent/compose?text=${encodeURIComponent(getShareText() + ' ' + getShareUrl())}`, '_blank');
+  const text = getShareText() + '\n\n' + getShareUrl();
+  window.open(`https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`, '_blank');
 });
 on('share-reddit', 'click', () => {
-  window.open(`https://www.reddit.com/submit?url=${encodeURIComponent(getShareUrl())}&title=${encodeURIComponent('Copilot CLI Pirates — Learn CLI commands while sailing the seas! ⚓🏴‍☠️')}`, '_blank');
+  window.open(`https://www.reddit.com/submit?url=${encodeURIComponent(getShareUrl())}&title=${encodeURIComponent(getShareText())}`, '_blank');
 });
 on('share-copy', 'click', () => {
   navigator.clipboard.writeText(getShareText() + '\n' + getShareUrl()).then(() => {
