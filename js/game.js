@@ -2270,10 +2270,12 @@ function getShareText() {
 function getShareUrl() { return window.location.href; }
 
 on('share-x', 'click', () => {
-  window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(getShareText())}&url=${encodeURIComponent(getShareUrl())}`, '_blank');
+  const text = getShareText() + ' by @chris_noring';
+  window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(getShareUrl())}`, '_blank');
 });
 on('share-linkedin', 'click', () => {
-  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getShareUrl())}`, '_blank');
+  const text = getShareText() + '\n\nCreated by Christoffer Noring: https://www.linkedin.com/in/christoffer-noring-3257061/';
+  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getShareUrl())}&summary=${encodeURIComponent(text)}`, '_blank');
 });
 on('share-bluesky', 'click', () => {
   window.open(`https://bsky.app/intent/compose?text=${encodeURIComponent(getShareText() + ' ' + getShareUrl())}`, '_blank');
