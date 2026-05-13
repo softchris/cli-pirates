@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copilot CLI Pirates</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Splash Screen -->
+  <div id="splash-screen">
+    <img src="images/splash.png" alt="Pirate Knowledge World" id="splash-img">
+  </div>
+
+  <!-- Captain Selection Screen -->
+  <div id="captain-select-overlay" style="display:none">
+    <div id="captain-select-content">
+      <h1>⚓ Choose Yer Captain!</h1>
+      <p class="captain-subtitle">Each captain has unique stats that affect yer voyage</p>
+      <div id="captain-grid"></div>
+    </div>
+  </div>
+
+  <!-- Intro Screen (after captain select) -->
+  <div id="intro-overlay" style="display:none">
+    <div id="intro-content">
+      <h1>⚓ Copilot CLI Pirates</h1>      <div class="rules">
+        <span>🏝️</span> Sail to each island and press <strong>E</strong> to dock<br>
+        <span>✅</span> Answer questions correctly to claim the island<br>
+        <span>⚔️</span> Wrong answers summon ghost ships — fight or flee!<br>
+        <span>💀</span> Enemy ships will hunt ye if ye sail too close<br>
+        <span>⭐</span> Earn XP, level up, and spend skill points<br>
+        <span>🗺️</span> Conquer all 7 islands to become Pirate King<br><br>
+        <span>🎮</span> <strong>WASD/Arrows</strong> sail · <strong>E</strong> dock · <strong>SPACE</strong> cannons · <strong>K</strong> skills · <strong>ESC</strong> menu
+      </div>
+      <p id="loading-text" style="font-size:14px;color:#f39c12;margin-bottom:16px;">Loading pirate assets…</p>
+      <button class="start-btn" id="start-btn">⚓ SET SAIL, YE SCALLYWAG!</button>
+    </div>
+  </div>
+
+  <!-- Story Modal (shown after SET SAIL) -->
+  <div id="story-modal">
+    <div id="story-modal-content">
+      <h1>⚓ A Tale of the Seven Seas…</h1>
+      <div id="intro-story">
+        <p class="story-text">Ahoy, ye scurvy dog! Listen well…</p>
+        <p class="story-text">The Seven Seas be ruled by <em>ignorance</em>, and the ancient <strong>Islands of Knowledge</strong> lie scattered across the ocean — each one guardin' secrets of the legendary <strong>Copilot CLI</strong>.</p>
+        <p class="story-text">Many a pirate has tried to conquer 'em all, but none had the wits nor the guts to answer the riddles that protect each shore. Get it right, and the island bows to yer flag. Get it wrong… <em>well</em>, ye'd best be handy with a cannon, because ghost ships be comin' fer yer hull!</p>
+        <p class="story-text">Conquer all <strong>seven islands</strong>, prove yer knowledge be sharper than yer cutlass, and ye shall be crowned the one true <strong>Pirate King of the Knowledge Seas!</strong> ☠️👑</p>
+        <p class="story-text" style="color:#f39c12;font-size:14px;margin-top:12px;">Now pick up yer spyglass and set sail before the tide turns against ye!</p>
+      </div>
+      <button class="start-btn" id="story-ok-btn">☠️ TO THE SEAS!</button>
+    </div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <h1>⚓ Copilot CLI Pirates</h1>
+    <div class="stats">
+      <div class="stat"><span class="icon">🏝️</span> Islands: <span id="islands-conquered">0</span>/7</div>
+      <div class="stat"><span class="icon">⚔️</span> Battles: <span id="battles-fought">0</span></div>
+      <div class="stat"><span class="icon">💰</span> Score: <span id="score">0</span></div>
+      <div class="stat"><span class="icon">⚔️</span> Wpn Lv: <span id="weapon-level">1</span></div>
+      <div class="stat"><span class="icon">🏆</span> <span id="badge-count">0/27</span></div>
+      <div class="stat" id="skill-points-stat" style="display:none;"><span class="icon">⭐</span> Skills: <span id="hud-skill-points">0</span> <button id="open-skills-btn" style="background:#f39c12;border:none;color:#fff;padding:2px 8px;border-radius:4px;cursor:pointer;font-family:'Pirata One',cursive;font-size:12px;margin-left:4px;">Spend</button></div>
+    </div>
+    <!-- Level & XP Bar -->
+    <div id="xp-bar-container">
+      <div id="xp-bar-label">Lv <span id="hud-level">1</span></div>
+      <div id="xp-bar-track">
+        <div id="xp-fill"></div>
+      </div>
+      <div id="xp-text">0 / 200 XP</div>
+    </div>
+  </div>
+
+  <!-- Top-right action buttons -->
+  <div id="top-right-actions">
+    <div id="terminal-btn" title="Open Terminal (T)">💻</div>
+    <div id="captain-avatar" title="View Ship Stats">
+      <img id="captain-avatar-img" src="" alt="Captain">
+      <div id="captain-avatar-name"></div>
+      <button id="open-badges-btn" title="Open badges & quests">🏆</button>
+    </div>
+  </div>
+
+  <div id="badge-panel">
+    <div id="badge-panel-content">
+      <button id="badge-panel-close">✕</button>
+      <div id="badge-panel-header">
+        <div>
+          <h2 id="badge-panel-title">🏆 Badges</h2>
+          <p id="badge-panel-summary">Badges 0/27 · Quests 0/8</p>
+        </div>
+      </div>
+      <div id="badge-panel-tabs">
+        <button class="badge-tab-btn active" data-tab="badges">🏆 Badges</button>
+        <button class="badge-tab-btn" data-tab="quests">🗺️ Quests</button>
+      </div>
+      <div id="badge-panel-body"></div>
+    </div>
+  </div>
+
+  <!-- Captain Stats Panel (shown on avatar click) -->
+  <div id="captain-stats-panel">
+    <div id="captain-stats-content">
+      <button id="captain-stats-close">✕</button>
+      <div id="captain-stats-header">
+        <img id="stats-captain-img" src="" alt="">
+        <div>
+          <h2 id="stats-captain-name"></h2>
+          <p id="stats-captain-title"></p>
+        </div>
+      </div>
+      <div id="stats-grid">
+        <div class="stat-row"><span>❤️ Health</span><span id="stats-health"></span></div>
+        <div class="stat-row"><span>🛡️ Armor</span><span id="stats-armor"></span></div>
+        <div class="stat-row"><span>⚔️ Weapon Level</span><span id="stats-weapon"></span></div>
+        <div class="stat-row"><span>💥 Cannon Damage</span><span id="stats-damage"></span></div>
+        <div class="stat-row"><span>🔄 Fire Rate</span><span id="stats-firerate"></span></div>
+        <div class="stat-row"><span>💨 Speed</span><span id="stats-speed"></span></div>
+        <div class="stat-row"><span>🏝️ Islands</span><span id="stats-islands"></span></div>
+        <div class="stat-row"><span>💰 Score</span><span id="stats-score"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Menu (ESC) -->
+  <div id="main-menu-overlay">
+    <div id="main-menu">
+      <h1>⚓ Main Menu</h1>
+      <div id="share-bar">
+        <span class="share-label">Share the adventure:</span>
+        <button class="share-btn" id="share-x" title="Share on X">𝕏</button>
+        <button class="share-btn" id="share-linkedin" title="Share on LinkedIn">in</button>
+        <button class="share-btn" id="share-bluesky" title="Share on Bluesky">🦋</button>
+        <button class="share-btn" id="share-reddit" title="Share on Reddit">⬆</button>
+        <button class="share-btn" id="share-copy" title="Copy link">📋</button>
+      </div>
+      <button class="menu-btn" id="menu-resume">▶ Resume Game</button>
+      <button class="menu-btn" id="menu-settings">⚙️ Settings</button>
+      <button class="menu-btn" id="menu-new-game">🔄 New Game</button>
+      <button class="menu-btn" id="menu-credits">📜 Credits</button>
+    </div>
+  </div>
+
+  <!-- Settings Panel -->
+  <div id="settings-overlay">
+    <div id="settings-content">
+      <h1>⚙️ Settings</h1>
+      <div class="setting-group">
+        <h3>🌅 Time of Day</h3>
+        <div id="time-of-day-btns">
+          <button class="tod-btn" data-tod="morning">🌅 Morning</button>
+          <button class="tod-btn active" data-tod="day">☀️ Day</button>
+          <button class="tod-btn" data-tod="night">🌙 Night</button>
+        </div>
+      </div>
+      <div class="setting-group">
+        <h3>🎵 Music Volume</h3>
+        <div class="slider-row">
+          <input type="range" id="music-volume" min="0" max="100" value="100">
+          <span id="music-volume-val">100%</span>
+        </div>
+      </div>
+      <div class="setting-group">
+        <h3>🔊 Effects Volume</h3>
+        <div class="slider-row">
+          <input type="range" id="sfx-volume" min="0" max="100" value="50">
+          <span id="sfx-volume-val">50%</span>
+        </div>
+      </div>
+      <button class="menu-btn" id="settings-back">← Back</button>
+    </div>
+  </div>
+
+  <!-- Credits Screen -->
+  <div id="credits-overlay">
+    <div id="credits-content">
+      <h1>📜 Credits</h1>
+      <div class="credits-section">
+        <h3>🏴‍☠️ Copilot CLI Pirates</h3>
+        <p>A quiz adventure game built with Three.js</p>
+      </div>
+      <div class="credits-section">
+        <h3>🎨 3D Models</h3>
+        <p><a href="https://kenney.nl/assets/pirate-kit" target="_blank">Kenney Pirate Kit</a> by Kenney.nl (CC0)</p>
+      </div>
+      <div class="credits-section">
+        <h3>🔊 Sound Effects</h3>
+        <p><a href="https://opengameart.org" target="_blank">OpenGameArt.org</a> — Pirate Pack Vol 1</p>
+      </div>
+      <div class="credits-section">
+        <h3>📚 Quiz Content</h3>
+        <p><a href="https://github.com/github/copilot-cli-for-beginners" target="_blank">GitHub Copilot CLI for Beginners</a></p>
+      </div>
+      <div class="credits-section">
+        <h3>🏴‍☠️ Pirate Captains</h3>
+        <p><a href="https://developer.microsoft.com/en-us/advocates/" target="_blank">Microsoft Developer Advocates</a></p>
+      </div>
+      <button class="menu-btn" id="credits-back">← Back</button>
+    </div>
+  </div>
+
+  <!-- Loot Pickup Notifications -->
+  <div id="loot-notifications"></div>
+  <div id="badge-notifications"></div>
+
+  <!-- Progress Bar -->
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+
+  <!-- Island Label -->
+  <div id="island-label">
+    <div class="name"></div>
+    <div class="subtitle"></div>
+  </div>
+
+  <!-- Cannon Cooldown Bar -->
+  <div id="cannon-cooldown">
+    <div id="cannon-cooldown-label">💣 CANNONS</div>
+    <div id="cannon-cooldown-bar"><div id="cannon-cooldown-fill"></div></div>
+  </div>
+
+  <!-- Controls Hint -->
+  <div id="controls-hint">
+    WASD / Arrows — Sail<br>
+    E — Dock at island<br>
+    SPACE — Fire Broadside
+  </div>
+
+  <!-- Quiz Modal -->
+  <div id="quiz-overlay">
+    <div id="quiz-modal">
+      <div class="island-banner">
+        <div class="dot" id="quiz-dot"></div>
+        <h2 id="quiz-island-name"></h2>
+      </div>
+      <div class="lesson-tag" id="quiz-lesson"></div>
+      <div class="question-counter" id="question-counter"></div>
+      <div class="question-text" id="question-text"></div>
+      <div class="options" id="options-container"></div>
+      <div class="result-feedback" id="result-feedback">
+        <h3 id="result-title"></h3>
+        <p id="result-explanation"></p>
+      </div>
+      <button class="next-btn" id="next-btn" style="display:none">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Battle Overlay -->
+  <div id="battle-overlay"></div>
+  <div id="battle-text">⚔️ PIRATE ATTACK! ⚔️</div>
+
+  <!-- Island Conquered Banner -->
+  <div id="conquest-banner">
+    <div id="conquest-content">
+      <div class="conquest-icon">🏴‍☠️</div>
+      <h2 id="conquest-title">ISLAND CONQUERED!</h2>
+      <p id="conquest-name"></p>
+    </div>
+  </div>
+
+  <!-- Victory Overlay -->
+  <div id="victory-overlay">
+    <div id="victory-content">
+      <h1>🏴‍☠️ YE ARE THE PIRATE KING! 🏴‍☠️</h1>
+      <p>All seven islands have been conquered!<br>You've mastered GitHub Copilot CLI.</p>
+      <p id="final-score"></p>
+      <button class="replay-btn" id="replay-btn">SAIL AGAIN</button>
+    </div>
+  </div>
+
+  <!-- Minimap -->
+  <div id="minimap">
+    <canvas id="minimap-canvas" width="180" height="180"></canvas>
+  </div>
+
+  <!-- Copilot CLI Terminal -->
+  <div id="cli-terminal">
+    <div id="cli-header">
+      <span id="cli-title">⚡ Copilot CLI Terminal</span>
+      <span id="cli-hint">Press <kbd>T</kbd> to toggle · Type <kbd>/help</kbd> for commands</span>
+      <button id="cli-close">✕</button>
+    </div>
+    <div id="cli-output"></div>
+    <div id="cli-input-row">
+      <span id="cli-prompt">copilot&gt;</span>
+      <input type="text" id="cli-input" placeholder="Type a /command..." autocomplete="off" spellcheck="false">
+    </div>
+  </div>
+
+  <!-- Three.js from CDN -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="js/game.js"></script>
+</body>
+</html>

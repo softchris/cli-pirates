@@ -1,0 +1,8 @@
+node_modules/
+package-lock.json
+test-results/
+playwright-report/
+kenney_pirate-kit/
+kenney_pirate-kit.zip
+package.json
+screenshots.js
