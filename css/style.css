@@ -1288,18 +1288,12 @@ canvas { display: block; }
   margin-bottom: 16px;
 }
 #share-bar {
-  display: flex; align-items: center; gap: 8px;
-  justify-content: center; margin-bottom: 20px;
-  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.1);
-}
-.share-label {
-  font-family: 'MedievalSharp', cursive; font-size: 13px;
-  color: #888; margin-right: 4px;
+  display: flex; align-items: center; gap: 6px;
 }
 .share-btn {
-  width: 38px; height: 38px; border-radius: 50%;
-  border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.06);
-  color: #fff; font-size: 16px; cursor: pointer;
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08);
+  color: #fff; font-size: 13px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all .2s; font-weight: bold;
 }
